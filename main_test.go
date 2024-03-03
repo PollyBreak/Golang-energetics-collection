@@ -145,3 +145,41 @@ func TestGetNumberOfPages(t *testing.T) {
 
 	assert.Equal(t, http.StatusOK, rr.Code)
 }
+
+// TestEndToEndScenario tests the entire application flow from client request to server response.
+func TestEndToEndScenario(t *testing.T) {
+	// Create a request to simulate a client request
+	requestBody := map[string]interface{}{
+		"name":               "Test Energetic",
+		"taste":              "Test Taste",
+		"description":        "Test Description",
+		"manufacturerName":   "Test Manufacturer",
+		"manufactureCountry": "Test Country",
+	}
+	requestJSON, _ := json.Marshal(requestBody)
+	req, err := http.NewRequest("POST", "/energetix", bytes.NewReader(requestJSON))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Create a response recorder to record the response
+	rr := httptest.NewRecorder()
+
+	// Call your HTTP handler directly to handle the request
+	handler := http.HandlerFunc(postEnergetic)
+	handler.ServeHTTP(rr, req)
+
+	// Check the status code of the response
+	assert.Equal(t, http.StatusCreated, rr.Code, "status code is not Created")
+
+	// Check the response body to ensure it contains the expected data
+	var response map[string]interface{}
+	err = json.Unmarshal(rr.Body.Bytes(), &response)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Perform assertions on the response body
+	assert.Equal(t, "Test Energetic", response["name"], "name does not match expected")
+	assert.Equal(t, "Test Taste", response["taste"], "taste does not match expected")
+}

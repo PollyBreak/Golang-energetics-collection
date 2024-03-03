@@ -33,7 +33,7 @@ type Message struct {
 }
 
 type pagesCount struct {
-	Pages int `json:"pages`
+	Pages int `json:"pages"`
 }
 
 type Energetic struct {
